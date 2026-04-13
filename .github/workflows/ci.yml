@@ -1,0 +1,14 @@
+﻿name: Platform.IaC CI
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  validate-docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Validate Docker Compose
+        run: docker compose config
