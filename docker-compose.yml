@@ -1,0 +1,64 @@
+﻿version: '3.8'
+
+services:
+  postgres-identity:
+    image: postgres:latest
+    container_name: platform-postgres-identity
+    environment:
+      POSTGRES_USER: ${IDENTITY_DB_USER}
+      POSTGRES_PASSWORD: ${IDENTITY_DB_PASSWORD}
+      POSTGRES_DB: ${IDENTITY_DB_NAME}
+    ports:
+      - "5433:5432"
+    volumes:
+      - identity-data:/var/lib/postgresql/data
+    networks:
+      - platform-network
+
+  postgres-catalog:
+    image: postgres:latest
+    container_name: platform-postgres-catalog
+    environment:
+      POSTGRES_USER: ${CATALOG_DB_USER}
+      POSTGRES_PASSWORD: ${CATALOG_DB_PASSWORD}
+      POSTGRES_DB: ${CATALOG_DB_NAME}
+    ports:
+      - "5434:5432"
+    volumes:
+      - catalog-data:/var/lib/postgresql/data
+    networks:
+      - platform-network
+
+  rabbitmq-bus:
+    image: rabbitmq:3-management
+    container_name: platform-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - platform-network
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: platform-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres-identity
+      - postgres-catalog
+    networks:
+      - platform-network
+
+networks:
+  platform-network:
+    driver: bridge
+
+volumes:
+  identity-data:
+  catalog-data:
