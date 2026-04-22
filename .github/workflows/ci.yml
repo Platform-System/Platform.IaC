@@ -1,4 +1,4 @@
-﻿name: Platform.IaC CI
+name: IaC CI
 
 on:
   push:
